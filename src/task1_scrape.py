@@ -16,8 +16,13 @@ def fetch_wikipedia_page(url):
     Raises:
         HTTPError: If the HTTP request returned an unsuccessful status code.
     """
+    headers = {
+        "User-Agent": "DataScienceLearningNotebook/1.0"
+    }
 
-    return None
+    response = requests.get(url, headers=headers, timeout=3)
+
+    return response.text
 
 
 def extract_title(soup):
@@ -30,9 +35,10 @@ def extract_title(soup):
     Returns:
         str: The title of the page.
     """
-
-    return None
-
+    title = soup.find(class_="mw-page-title-main")
+    if not title:
+        title = soup.find(id="firstHeading")
+    return title.get_text()
 
 def extract_first_sentence(soup):
     """
@@ -45,7 +51,7 @@ def extract_first_sentence(soup):
         str: The first sentence of the first paragraph.
     """
 
-    return None
+    return soup.find(name="p").get_text().split(".")[0] + "."
 
 
 def save_to_json(data, filename):
@@ -57,7 +63,8 @@ def save_to_json(data, filename):
         filename (str): The name of the JSON file to save the data in.
     """
     ...
-
+    with open(filename, "w") as f:
+        json.dump(data, f)
 
 if __name__ == "__main__":
     url = "https://en.wikipedia.org/wiki/Web_scraping"
